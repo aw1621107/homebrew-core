@@ -17,6 +17,29 @@ class CodesignRequirement < Requirement
   end
 end
 
+class OCamlRequirement < Requirement
+  fatal true
+
+  def opam_is_installed(package_name)
+    `opam show #{package_name}`[/^\s*all-installed-versions\s*\d.*$/]
+  end
+
+  satisfy(:build_env => false) do
+    opam_is_installed("ocamlfind")
+    opam_is_installed("ctypes")
+    opam_is_installed("ounit")
+  end
+
+  def message
+    <<-EOS.undent
+    ocamlfind, ctypes, and ounit 2 are required to build
+    OCaml bindings for LLVM. You can install them using:
+
+        opam install ocamlfind ctypes ounit
+    EOS
+  end
+end
+
 class Llvm < Formula
   desc "Next-gen compiler infrastructure"
   homepage "http://llvm.org/"
@@ -129,6 +152,7 @@ class Llvm < Formula
   option "without-libunwind", "Do not build libunwind library"
   option "without-lld", "Do not build LLD linker"
   option "with-lldb", "Build LLDB debugger"
+  option "with-ocaml", "Build the LLVM OCaml bindings"
   option "with-python", "Build bindings against custom Python"
   option "without-rtti", "Build without C++ RTTI or exception handling"
   option "without-utils", "Do not install utility binaries"
@@ -140,7 +164,6 @@ class Llvm < Formula
 
   depends_on "libffi" => :recommended # http://llvm.org/docs/GettingStarted.html#requirement
   depends_on "graphviz" => :optional # for the 'dot' tool (lldb)
-  depends_on "ocaml" => :optional
 
   if MacOS.version <= :snow_leopard
     depends_on :python
@@ -152,6 +175,12 @@ class Llvm < Formula
   if build.with? "lldb"
     depends_on "swig" if MacOS.version >= :lion
     depends_on CodesignRequirement
+  end
+
+  if build.with? "ocaml"
+    depends_on "ocaml"
+    depends_on "opam"
+    depends_on OCamlRequirement
   end
 
   # Apple's libstdc++ is too old to build LLVM
@@ -262,6 +291,7 @@ class Llvm < Formula
     mktemp do
       system "cmake", "-G", "Unix Makefiles", buildpath, *(std_cmake_args + args)
       system "make"
+      system "make", "ocaml_doc" if build.with? "ocaml"
       system "make", "install"
       system "make", "install-xcode-toolchain" if build.with? "toolchain"
     end
