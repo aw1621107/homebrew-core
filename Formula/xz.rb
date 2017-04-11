@@ -20,6 +20,7 @@ class Xz < Formula
                           "--disable-dependency-tracking",
                           "--disable-silent-rules",
                           "--enable-external-sha256",
+                          "--enable-assembler=x86_64",
                           "--prefix=#{prefix}"
     system "make", "check"
     system "make", "install"
