@@ -15,6 +15,9 @@ class Xz < Formula
     sha256 "82eef73a78db1c46ed8482c357f6ad1797a62f4c9124410b362efe885082892c" => :yosemite
   end
 
+  depends_on "libiconv"
+  depends_on "gettext"
+
   def install
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
