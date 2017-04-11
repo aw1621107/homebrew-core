@@ -29,6 +29,7 @@ class Cmake < Formula
   depends_on "xz" => :optional
   depends_on "libarchive" => :optional
   depends_on "rhash" => :optional
+  depends_on "ncurses" => :optional
 
   def install
     args = %W[
