@@ -19,6 +19,15 @@ class Gettext < Formula
   # https://savannah.gnu.org/bugs/index.php?46844
   depends_on "libxml2" if MacOS.version <= :mountain_lion
 
+  depends_on :java => :optional
+  depends_on "mono" => :optional
+  depends_on "git" => :optional
+  depends_on "xz" => :optional
+  depends_on "glib" => :optional
+  depends_on "libcroco" => :optional
+  depends_on "libunistring" => :optional
+  depends_on "cvs" => :optional
+
   def install
     args = %W[
       --disable-dependency-tracking
@@ -26,20 +35,49 @@ class Gettext < Formula
       --disable-debug
       --prefix=#{prefix}
       --with-included-gettext
-      --with-included-glib
-      --with-included-libcroco
-      --with-included-libunistring
       --with-emacs
       --with-lispdir=#{elisp}
-      --disable-java
-      --disable-csharp
     ]
-    # Don't use VCS systems to create these archives
-    args += %W[
-      --without-git
-      --without-cvs
-      --without-xz
-    ]
+    if build.with? :java
+      args << "--enable-java"
+    else
+      args << "--disable-java"
+    end
+    if build.with? "mono"
+      args << "--enable-csharp=mono"
+    else
+      args << "--disable-csharp"
+    end
+    if build.with? "glib"
+      args << "--with-libglib-2.0-prefix=#{Formula["glib"].opt_prefix}"
+    else
+      args << "--with-included-glib"
+    end
+    if build.with? "libcroco"
+      args << "--with-libcroco-0.6-prefix=#{Formula["libcroco"].opt_prefix}"
+    else
+      args << "--with-included-libcroco"
+    end
+    if build.with? "libunistring"
+      args << "--with-libunistring-prefix=#{Formula["libunistring"].opt_prefix}"
+    else
+      args << "--with-included-libunistring"
+    end
+    if build.with? "git"
+      args << "--with-git"
+    else
+      args << "--without-git"
+    end
+    if build.with? "cvs"
+      args << "--with-cvs"
+    else
+      args << "--without-cvs"
+    end
+    if build.with? "xz"
+      args << "--with-xz"
+    else
+      args << "--without-xz"
+    end
     system "./configure", *args
     system "make"
     ENV.deparallelize # install doesn't support multiple make jobs
