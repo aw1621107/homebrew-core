@@ -13,6 +13,8 @@ class PkgConfig < Formula
     sha256 "d9ccc19f1a55919408a1b27260b0404aa36dc6782a4a5964e6fd8409abf3b830" => :yosemite
   end
 
+  depends_on "libiconv"
+
   def install
     pc_path = %W[
       #{HOMEBREW_PREFIX}/lib/pkgconfig
