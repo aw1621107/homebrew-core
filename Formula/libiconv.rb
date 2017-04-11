@@ -20,6 +20,8 @@ class Libiconv < Formula
     sha256 "e8128732f22f63b5c656659786d2cf76f1450008f36bcf541285268c66cabeab"
   end
 
+  depends_on "gettext" => :optional
+
   patch :DATA
 
   def install
