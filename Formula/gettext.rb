@@ -28,6 +28,9 @@ class Gettext < Formula
   depends_on :java => :optional
   depends_on "mono" => :optional
   depends_on "git" => :optional
+  depends_on "gnu-tar" => :optional
+  depends_on "gzip" => :optional
+  depends_on "bzip2" => :optional
   depends_on "xz" => :optional
   depends_on "glib" => :optional
   depends_on "libcroco" => :optional
