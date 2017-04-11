@@ -20,22 +20,27 @@ class Gettext < Formula
   depends_on "libxml2" if MacOS.version <= :mountain_lion
 
   def install
-    system "./configure", "--disable-dependency-tracking",
-                          "--disable-silent-rules",
-                          "--disable-debug",
-                          "--prefix=#{prefix}",
-                          "--with-included-gettext",
-                          "--with-included-glib",
-                          "--with-included-libcroco",
-                          "--with-included-libunistring",
-                          "--with-emacs",
-                          "--with-lispdir=#{elisp}",
-                          "--disable-java",
-                          "--disable-csharp",
-                          # Don't use VCS systems to create these archives
-                          "--without-git",
-                          "--without-cvs",
-                          "--without-xz"
+    args = %W[
+      --disable-dependency-tracking
+      --disable-silent-rules
+      --disable-debug
+      --prefix=#{prefix}
+      --with-included-gettext
+      --with-included-glib
+      --with-included-libcroco
+      --with-included-libunistring
+      --with-emacs
+      --with-lispdir=#{elisp}
+      --disable-java
+      --disable-csharp
+    ]
+    # Don't use VCS systems to create these archives
+    args += %W[
+      --without-git
+      --without-cvs
+      --without-xz
+    ]
+    system "./configure", *args
     system "make"
     ENV.deparallelize # install doesn't support multiple make jobs
     system "make", "install"
