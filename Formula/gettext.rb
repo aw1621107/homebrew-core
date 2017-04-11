@@ -40,6 +40,10 @@ class Gettext < Formula
   depends_on :tex => [:optional, :build]
   depends_on "emacs" => [:optional, :build]
 
+  option "with-openmp", "Build using openmp"
+
+  needs :openmp if build.with? "openmp"
+
   def install
     args = %W[
       --disable-dependency-tracking
