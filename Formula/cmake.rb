@@ -21,6 +21,12 @@ class Cmake < Formula
   # CMake is built with Qt support and Qt is built with MySQL support as MySQL uses CMake.
   # For the GUI application please instead use `brew cask install cmake`.
 
+  depends_on "expat" => :optional
+  depends_on "jsoncpp" => :optional
+  depends_on "xz" => :optional
+  depends_on "libarchive" => :optional
+  depends_on "rhash" => :optional
+
   def install
     args = %W[
       --prefix=#{prefix}
@@ -33,6 +39,12 @@ class Cmake < Formula
       --system-bzip2
       --system-curl
     ]
+
+    args << "--system-expat" if build.with? "expat"
+    args << "--system-jsoncpp" if build.with? "jsoncpp"
+    args << "--system-liblzma" if build.with? "xz"
+    args << "--system-libarchive" if build.with? "libarchive"
+    args << "--system-librhash" if build.with? "rhash"
 
     if build.with? "docs"
       # There is an existing issue around macOS & Python locale setting
