@@ -23,7 +23,7 @@ class Zlib < Formula
   end
 
   def install
-    system "./configure", "--prefix=#{prefix}"
+    system "./configure", "--prefix=#{prefix}", "--const"
     system "make", "install"
   end
 
