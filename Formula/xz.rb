@@ -19,6 +19,7 @@ class Xz < Formula
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
                           "--disable-silent-rules",
+                          "--enable-external-sha256",
                           "--prefix=#{prefix}"
     system "make", "check"
     system "make", "install"
