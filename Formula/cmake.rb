@@ -20,6 +20,9 @@ class Cmake < Formula
   # The `with-qt` GUI option was removed due to circular dependencies if
   # CMake is built with Qt support and Qt is built with MySQL support as MySQL uses CMake.
   # For the GUI application please instead use `brew cask install cmake`.
+  depends_on "curl" => :optional
+  depends_on "zlib" => :optional
+  depends_on "bzip2" => :optional
 
   depends_on "expat" => :optional
   depends_on "jsoncpp" => :optional
