@@ -17,8 +17,14 @@ class Gettext < Formula
     "macOS provides the BSD gettext library & some software gets confused if both are in the library path"
 
   # https://savannah.gnu.org/bugs/index.php?46844
-  depends_on "libxml2" if MacOS.version <= :mountain_lion
+  if MacOS.version <= :mountain_lion
+    depends_on "libxml2"
+  else
+    depends_on "libxml2" => :optional
+  end
 
+  depends_on "libiconv" => :optional
+  depends_on "ncurses" => :optional
   depends_on :java => :optional
   depends_on "mono" => :optional
   depends_on "git" => :optional
@@ -78,6 +84,17 @@ class Gettext < Formula
     else
       args << "--without-xz"
     end
+
+    if build.with? "libiconv"
+      args << "with-libiconv-prefix=#{Formula["libiconv"].opt_prefix}"
+    end
+    if build.with? "libxml2"
+      args << "--with-libxml2-prefix=#{Formula["libxml2"].opt_prefix}"
+    end
+    if build.with? "ncurses"
+      args << "--with-libncurses-prefix=#{Formula["ncurses"].opt_prefix}"
+    end
+
     system "./configure", *args
     system "make"
     ENV.deparallelize # install doesn't support multiple make jobs
