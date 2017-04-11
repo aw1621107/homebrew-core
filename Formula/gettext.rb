@@ -37,6 +37,9 @@ class Gettext < Formula
   depends_on "libunistring" => :optional
   depends_on "cvs" => :optional
 
+  depends_on :tex => [:optional, :build]
+  depends_on "emacs" => [:optional, :build]
+
   def install
     args = %W[
       --disable-dependency-tracking
