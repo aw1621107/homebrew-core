@@ -24,6 +24,8 @@ class Mpfr < Formula
   end
 
   def install
+    ENV["mpfr_cv_c_long_double_format"] = "IEEE extended, little endian"
+
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}",
                           "--disable-silent-rules"
     system "make"
