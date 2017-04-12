@@ -14,6 +14,11 @@ class Mpfr < Formula
   end
 
   depends_on "gmp"
+  resource "gmp-build" do
+    url "https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz"
+    mirror "https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz"
+    sha256 "87b565e89a9a684fe4ebeeddb8399dce2599f9c9049854ca8c0dfbdea0e21912"
+  end
 
   fails_with :clang do
     build 421
@@ -24,10 +29,23 @@ class Mpfr < Formula
   end
 
   def install
+    (buildpath/"gmp-build").install resource("gmp-build")
+    cd (buildpath/"gmp-build") do
+      ENV["gmp_cv_c_double_format"] = "IEEE little endian"
+      gmp_args = %W[
+        --enable-cxx
+        --enable-alloca=alloca
+      ]
+      system "./configure", *gmp_args
+      system "make"
+      system "make", "check"
+    end
+
     ENV["mpfr_cv_c_long_double_format"] = "IEEE extended, little endian"
 
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}",
-                          "--disable-silent-rules"
+                          "--disable-silent-rules",
+                          "--with-gmp-build=#{buildpath/"gmp-build"}"
     system "make"
     system "make", "check"
     system "make", "install"
