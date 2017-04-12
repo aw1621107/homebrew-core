@@ -14,7 +14,7 @@ class Gmp < Formula
   end
 
   def install
-    args = %W[--prefix=#{prefix} --enable-cxx]
+    args = %W[--prefix=#{prefix} --enable-cxx --enable-alloca=alloca]
     args << "--build=core2-apple-darwin#{`uname -r`.to_i}" if build.bottle?
     system "./configure", "--disable-static", *args
     system "make"
