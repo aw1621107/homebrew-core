@@ -14,6 +14,7 @@ class Gmp < Formula
   end
 
   def install
+    ENV["gmp_cv_c_double_format"] = "IEEE little endian"
     args = %W[--prefix=#{prefix} --enable-cxx --enable-alloca=alloca]
     args << "--build=core2-apple-darwin#{`uname -r`.to_i}" if build.bottle?
     system "./configure", "--disable-static", *args
