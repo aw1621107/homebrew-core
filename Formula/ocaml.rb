@@ -35,6 +35,7 @@ class Ocaml < Formula
   option "with-x11", "Install with the Graphics module"
   option "with-flambda", "Install with flambda support"
 
+  depends_on "ncurses"
   depends_on :x11 => :optional
 
   def install
