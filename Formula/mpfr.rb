@@ -45,7 +45,8 @@ class Mpfr < Formula
 
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}",
                           "--disable-silent-rules",
-                          "--with-gmp-build=#{buildpath/"gmp-build"}"
+                          "--with-gmp-build=#{buildpath/"gmp-build"}",
+                          "--enable-thread-safe"
     system "make"
     system "make", "check"
     system "make", "install"
