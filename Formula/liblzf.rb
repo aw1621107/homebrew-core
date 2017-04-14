@@ -13,6 +13,8 @@ class Liblzf < Formula
     sha256 "025ca90ede89fa17407e1aec34f3a7cf3d91e414c2d629401c3b877e91c56661" => :mavericks
   end
 
+  patch :DATA
+
   def install
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
@@ -47,3 +49,43 @@ class Liblzf < Formula
     system "./test"
   end
 end
+
+__END__
+diff --git 1/Makefile.in-original 2/Makefile.in
+index 3c87d62de8b2..49920fa8d8e5 100644
+--- 1/Makefile.in-original
++++ 2/Makefile.in
+@@ -27,7 +27,7 @@ lzf_d.o: lzf_d.c lzfP.h
+ 
+ lzf.o: lzf.c
+ 
+-lzf: lzf.o liblzf.a
++lzf: lzf.o liblzf.dylib liblzf.a
+ 
+ lzfP.h: lzf.h config.h
+ 
+@@ -36,6 +36,14 @@ liblzf.a: lzf_c.o lzf_d.o
+ 	$(AR) rc $@ $^
+ 	$(RANLIB) $@
+ 
++liblzf.dylib: lzf_c.o lzf_d.o
++	rm -f $@
++	$(CC) $(CFLAGS) $(LDFLAGS) lzf_c.o lzf_d.o -dynamiclib -o liblzf.$(VERSION).dylib \
++		-install_name $(libdir)/liblzf.$(VERSION).dylib \
++		-compatibility_version 1.0 -current_version $(VERSION)
++	ln -s liblzf.$(VERSION).dylib liblzf.1.0.dylib
++	ln -s liblzf.$(VERSION).dylib liblzf.dylib
++
+ install: all
+ 	$(INSTALL) -d $(bindir)
+ 	$(INSTALL) -m 755 lzf $(bindir)
+@@ -43,6 +51,9 @@ install: all
+ 	$(INSTALL_DATA) lzf.h $(includedir)
+ 	$(INSTALL) -d $(libdir)
+ 	$(INSTALL_DATA) liblzf.a $(libdir)
++	$(INSTALL_DATA) liblzf.$(VERSION).dylib $(libdir)
++	ln -s $(libdir)/liblzf.$(VERSION).dylib $(libdir)/liblzf.1.0.dylib
++	ln -s $(libdir)/liblzf.$(VERSION).dylib $(libdir)/liblzf.dylib
+ 
+ dist:
+ 	mkdir liblzf-$(VERSION)
