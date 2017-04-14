@@ -18,7 +18,10 @@ class Autoconf < Formula
 
   keg_only :provided_until_xcode43
 
+  depends_on "m4" => :build
+
   def install
+    ENV["M4"] = "m4"
     ENV["PERL"] = "/usr/bin/perl"
 
     # force autoreconf to look for and use our glibtoolize
