@@ -26,7 +26,7 @@ class M4 < Formula
 
   def install
     system "./configure", "--disable-dependency-tracking", "--prefix=#{prefix}",
-                          "--enable-threads=posix"
+                          "--enable-threads=posix", "--enable-c++"
     system "make"
     system "make", "install"
   end
