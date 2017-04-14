@@ -15,10 +15,12 @@ class Bzip2 < Formula
 
   keg_only :provided_by_osx
 
+  patch :DATA
+
   def install
     inreplace "Makefile", "$(PREFIX)/man", "$(PREFIX)/share/man"
 
-    system "make", "install", "PREFIX=#{prefix}"
+    system "make", "install", "PREFIX=#{prefix}", "VERSION=#{version}"
   end
 
   test do
@@ -33,3 +35,70 @@ class Bzip2 < Formula
     assert_equal "TEST CONTENT", testfilepath.read
   end
 end
+
+__END__
+diff --git 1/Makefile 2/Makefile
+index 9754ddf286b1..1ef7d3f19e47 100644
+--- 1/Makefile
++++ 2/Makefile-copy
+@@ -35,9 +35,9 @@ OBJS= blocksort.o  \
+       decompress.o \
+       bzlib.o
+ 
+-all: libbz2.a bzip2 bzip2recover test
++all: libbz2.a libbz2.dylib bzip2 bzip2recover test
+ 
+-bzip2: libbz2.a bzip2.o
++bzip2: libbz2.a libbz2.dylib bzip2.o
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o bzip2 bzip2.o -L. -lbz2
+ 
+ bzip2recover: bzip2recover.o
+@@ -52,15 +52,23 @@ libbz2.a: $(OBJS)
+ 		$(RANLIB) libbz2.a ; \
+ 	fi
+ 
++libbz2.dylib: $(OBJS)
++	rm -f libbz2.dylib
++	$(CC) -dynamiclib $(OBJS) -o libbz2.$(VERSION).dylib \
++		-install_name $(PREFIX)/lib/libbz2.$(VERSION).dylib \
++		-compatibility_version 1.0 -current_version $(VERSION)
++	ln -s libbz2.$(VERSION).dylib libbz2.1.0.dylib
++	ln -s libbz2.$(VERSION).dylib libbz2.dylib
++
+ check: test
+ test: bzip2
+ 	@cat words1
+-	./bzip2 -1  < sample1.ref > sample1.rb2
+-	./bzip2 -2  < sample2.ref > sample2.rb2
+-	./bzip2 -3  < sample3.ref > sample3.rb2
+-	./bzip2 -d  < sample1.bz2 > sample1.tst
+-	./bzip2 -d  < sample2.bz2 > sample2.tst
+-	./bzip2 -ds < sample3.bz2 > sample3.tst
++	DYLD_LIBRARY_PATH=. ./bzip2 -1  < sample1.ref > sample1.rb2
++	DYLD_LIBRARY_PATH=. ./bzip2 -2  < sample2.ref > sample2.rb2
++	DYLD_LIBRARY_PATH=. ./bzip2 -3  < sample3.ref > sample3.rb2
++	DYLD_LIBRARY_PATH=. ./bzip2 -d  < sample1.bz2 > sample1.tst
++	DYLD_LIBRARY_PATH=. ./bzip2 -d  < sample2.bz2 > sample2.tst
++	DYLD_LIBRARY_PATH=. ./bzip2 -ds < sample3.bz2 > sample3.tst
+ 	cmp sample1.bz2 sample1.rb2 
+ 	cmp sample2.bz2 sample2.rb2
+ 	cmp sample3.bz2 sample3.rb2
+@@ -89,6 +97,9 @@ install: bzip2 bzip2recover
+ 	chmod a+r $(PREFIX)/include/bzlib.h
+ 	cp -f libbz2.a $(PREFIX)/lib
+ 	chmod a+r $(PREFIX)/lib/libbz2.a
++	cp -f libbz2.$(VERSION).dylib $(PREFIX)/lib
++	ln -s libbz2.$(VERSION).dylib $(PREFIX)/lib/libbz2.1.0.dylib
++	ln -s libbz2.$(VERSION).dylib $(PREFIX)/lib/libbz2.dylib
+ 	cp -f bzgrep $(PREFIX)/bin/bzgrep
+ 	ln -s -f $(PREFIX)/bin/bzgrep $(PREFIX)/bin/bzegrep
+ 	ln -s -f $(PREFIX)/bin/bzgrep $(PREFIX)/bin/bzfgrep
+@@ -109,7 +120,7 @@ install: bzip2 bzip2recover
+ 	echo ".so man1/bzdiff.1" > $(PREFIX)/man/man1/bzcmp.1
+ 
+ clean: 
+-	rm -f *.o libbz2.a bzip2 bzip2recover \
++	rm -f *.o libbz2.a libbz2.*.dylib bzip2 bzip2recover \
+ 	sample1.rb2 sample2.rb2 sample3.rb2 \
+ 	sample1.tst sample2.tst sample3.tst
+ 
