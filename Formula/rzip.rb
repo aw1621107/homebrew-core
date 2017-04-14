@@ -13,6 +13,8 @@ class Rzip < Formula
     sha256 "f86aa1c100b7144b04c43a06b475e11f18d88982ed0d5ea90b1da0c3cc813720" => :mavericks
   end
 
+  depends_on "bzip2"
+
   def install
     system "./configure", "--disable-debug",
                           "--disable-dependency-tracking",
