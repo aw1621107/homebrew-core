@@ -29,6 +29,7 @@ class Libressl < Formula
       --prefix=#{prefix}
       --with-openssldir=#{etc}/libressl
       --sysconfdir=#{etc}/libressl
+      --enable-nc
     ]
 
     system "./autogen.sh" if build.head?
