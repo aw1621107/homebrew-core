@@ -21,6 +21,8 @@ class Libtool < Formula
 
   keg_only :provided_until_xcode43
 
+  depends_on "m4" => :build
+
   def install
     ENV["SED"] = "sed" # prevent libtool from hardcoding sed path from superenv
     system "./configure", "--disable-dependency-tracking",
