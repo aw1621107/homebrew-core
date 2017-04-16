@@ -1,16 +1,14 @@
 class Nu < Formula
   desc "Object-oriented, Lisp-like programming language"
   homepage "http://programming.nu"
-  url "https://github.com/timburks/nu/archive/v2.1.1.tar.gz"
-  sha256 "5bdf8234855ecdec54b716c806a332c78812c73c8e7f626520dd273382d3de17"
+  url "https://github.com/timburks/nu/archive/v2.2.0.tar.gz"
+  sha256 "c7489c9dad1e24ee6cf7e70e5c31f4c891aba0793e8a00c4fc7e6b23d96fccc4"
 
   bottle do
     cellar :any
-    rebuild 1
-    sha256 "8c15fe6d9ec3f4a857a1c5948e784fc7b963e1336abeb6eafd0eb48144a6524e" => :sierra
-    sha256 "6db4fa8bafc2110e16cb7b8ae675e4e25483cb3d05b7f15535ae3cabe25f48d2" => :el_capitan
-    sha256 "6934ad8b4e7a1baa21939975a82b5fb2b4ec8d7462bb9c4237004dd10c05d9d4" => :yosemite
-    sha256 "c6075aa6a0ea3a36067295f9e9e16fca5ec0d4c79db5f7c5fde19e774a24f69e" => :mavericks
+    sha256 "f8ece82e0e6953a6146cff31a3758896119cc9984190d94a7a8e5e6eaa4f6062" => :sierra
+    sha256 "8dd2d00bb135201774ef6a1c8ca54711d77e835170368ac6a82d2f008ea9cbc5" => :el_capitan
+    sha256 "6582e9e393f82aa0936941602cd82f1a1546f6a602e57599330c5b5930296e39" => :yosemite
   end
 
   depends_on :macos => :lion
@@ -21,15 +19,8 @@ class Nu < Formula
     cause "nu only builds with clang"
   end
 
-  # remove deprecated -fobjc-gc
-  # https://github.com/timburks/nu/pull/74
-  # https://github.com/Homebrew/homebrew/issues/37341
-  patch do
-    url "https://github.com/timburks/nu/commit/c0b05f1.diff"
-    sha256 "f6c1a66e470e7132ba11937c971f9b90824bb03eaa030b3e70004f9d2725c636"
-  end
-
   def install
+    ENV.delete("SDKROOT") if MacOS.version < :sierra
     ENV["PREFIX"] = prefix
 
     inreplace "Nukefile" do |s|
