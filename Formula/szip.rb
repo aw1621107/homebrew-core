@@ -13,6 +13,8 @@ class Szip < Formula
     sha256 "7233abf10076a2cf358b9fcb00e5b1db55ccbb99251341842188aeb64b3c3b63" => :el_capitan
   end
 
+  # configure tries to find Fortran compiler, but it never seems to be used?
+
   def install
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
                           "--prefix=#{prefix}"
