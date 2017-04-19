@@ -27,7 +27,7 @@ class Python3 < Formula
   depends_on "readline" => :recommended
   depends_on "sqlite" => :recommended
   depends_on "gdbm" => :recommended
-  depends_on "openssl"
+  depends_on "libressl"
   depends_on "xz" => :recommended # for the lzma module added in 3.3
   depends_on "tcl-tk" => :optional
   depends_on "sphinx-doc" => [:build, :optional]
@@ -113,12 +113,12 @@ class Python3 < Formula
     # Avoid linking to libgcc https://mail.python.org/pipermail/python-dev/2012-February/116205.html
     args << "MACOSX_DEPLOYMENT_TARGET=#{MacOS.version}"
 
-    # We want our readline and openssl! This is just to outsmart the detection code,
+    # We want our readline and libressl! This is just to outsmart the detection code,
     # superenv makes cc always find includes/libs!
     inreplace "setup.py" do |s|
       s.gsub! "do_readline = self.compiler.find_library_file(lib_dirs, 'readline')",
               "do_readline = '#{Formula["readline"].opt_lib}/libhistory.dylib'"
-      s.gsub! "/usr/local/ssl", Formula["openssl"].opt_prefix
+      s.gsub! "/usr/local/ssl", Formula["libressl"].opt_prefix
     end
 
     if build.with? "sqlite"
@@ -249,8 +249,8 @@ class Python3 < Formula
     end
 
     # Help distutils find brewed stuff when building extensions
-    include_dirs = [HOMEBREW_PREFIX/"include", Formula["openssl"].opt_include]
-    library_dirs = [HOMEBREW_PREFIX/"lib", Formula["openssl"].opt_lib]
+    include_dirs = [HOMEBREW_PREFIX/"include", Formula["libressl"].opt_include]
+    library_dirs = [HOMEBREW_PREFIX/"lib", Formula["libressl"].opt_lib]
 
     if build.with? "sqlite"
       include_dirs << Formula["sqlite"].opt_include
